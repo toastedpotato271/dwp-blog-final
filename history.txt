@@ -1,0 +1,16 @@
+  235  composer update
+  236  php artisan key:generate
+  237  php artisan key:generate Post -m
+  238  php artisan make:model Post -m
+  239  php artisan make:model Comment -m
+  240  php artisan make:model Role -m; php artisan make:model Media -m
+  241  php artisan make:model User_Role -m; php artisan make:model Post_Category -m; php artisan make:model Category -m; php artisan make:model Tag -m
+  242  php artisan make:model Post_Tag -m
+  243  php version
+  244  php -v
+  245  php artisan migrate
+  246  php artisan migrate
+  247  doskey /HISTORY > history.txt
+  248  history > history.txt
+  249  ls
+  250  fc -ln -1000 > history.txt
