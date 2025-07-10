@@ -27,10 +27,9 @@ class PostFactory extends Factory
             "title" => $title,
             "content" => fake()->paragraph(),
             "slug" => Str::slug($title),
-            "publication_date" => $status == 'P' ? now() : null,
+            "publication_date" => $status == 'P' ? fake()->dateTimeBetween('-1 year', 'now') : null,
             "status" => $status,
             "featured_image_url" => fake()->imageUrl(640, 480, 'animals', true),
-            "views_count" => rand(0, 99)
         ];
     }
 }

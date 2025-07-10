@@ -22,8 +22,8 @@ class MediaFactory extends Factory
         return [
             'post_id' => Post::inRandomOrder()->value('id'),
             'file_name' => Str::slug(fake()->word(3, true)),
-            'file_type' => fake()->randomElement(['.jpg', '.tiff', '.png']),
-            'url' => fake()->url(),
+            'file_type' => ".jpg",
+            'url' => "https://picsum.photos/200/300",
             'description' => Str::limit(fake()->paragraph(), 50),
             'upload_date' => now(),
         ];

@@ -24,8 +24,12 @@ class PostSeeder extends Seeder
 
                 Post::factory(100)->make()->each(function ($post) use ($user) {
                         $post->user_id = $user->random()->id;
+
+                        if ($post->publication_date != null) {
+                                $post->views_count = rand(1, 99);
+                        }
+
                         $post->save();
-                        $post->view_count = rand(0, 99);
                 });
         }
 }

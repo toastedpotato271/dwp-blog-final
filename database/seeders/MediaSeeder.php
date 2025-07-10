@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Media;
+use App\Models\Post;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -13,6 +14,12 @@ class MediaSeeder extends Seeder
      */
     public function run(): void
     {
-        Media::factory(100)->create();
+        $posts = Post::all();
+
+        foreach ($posts as $post) {
+            Media::factory()->create([
+                'post_id' => $post->id,
+            ]);
+        }
     }
 }
