@@ -9,5 +9,4 @@
         <a class="px-5 py-2 cursor-pointer">Log In</a>
         <a class="bg-green-700 rounded-2xl text-white px-5 py-2 cursor-pointer">Sign up</a>
     </div>
-
 </div>
