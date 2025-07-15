@@ -12,9 +12,7 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::whereNotNull('views')
-            ->get();
-        return view('posts.index', ['posts' => $posts]);
+        return view('posts.index');
     }
 
     /**
@@ -22,7 +20,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+        return view('posts.create');
     }
 
     /**
@@ -38,7 +36,7 @@ class PostController extends Controller
      */
     public function show(string $id)
     {
-        //
+        return view('posts.store');
     }
 
     /**

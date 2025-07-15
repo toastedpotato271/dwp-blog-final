@@ -9,7 +9,7 @@
         <div class="text-5xl mb-1">Sample Title Here</div>
         <div class="flex gap-5 items-center justify-center">
             <span class="flex-11/12">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quam libero facilis assumenda ut in voluptatem fugit veritatis ipsam consectetur corrupti, aliquid autem voluptatibus deserunt facere nihil! Nesciunt nihil voluptatem libero.</span>
-            <span class="flex-1/12 cursor-pointer"><x-letsicon-arrow-right-light class="w-10"/></span>
+            <a class="flex-1/12 cursor-pointer"><x-letsicon-arrow-right-light class="w-10"/></a>
         </div>
     </div>
 </div>
