@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -25,7 +26,7 @@ class RelationshipSeeder extends Seeder
 
         $posts = Post::all();
         $tags = Tag::pluck('id')->toArray();
-        $categories = Tag::pluck('id')->toArray();
+        $categories = Category::pluck('id')->toArray();
 
         foreach ($posts as $post) {
             DB::table('post_tag')->insert([

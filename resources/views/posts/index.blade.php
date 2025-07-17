@@ -26,37 +26,29 @@
     <div class="w-[70%]">
         <div class="text-2xl font-bold">Budgeting & Savings</div>
         <div class="grid grid-cols-2 gap-7 mt-5">
-            <div class="cursor-pointer">
-                <div class="bg-black h-[200px] rounded-2xl mb-2"></div>
-                <div class="text-2xl font-semibold">Title here</div>
-                <div class="text-sm text-gray-500 mb-2">Author here</div>
-                <div class="text-black mb-4">Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut officia molestias placeat minima nisi quasi quam animi harum. Vero eaque nam perferendis ut sapiente velit at beatae quidem voluptatem eos!</div>
-                <button class="text-white bg-green-700 py-2 px-5 rounded-xl cursor-pointer">Read more</button>
-            </div>
 
-            <div class="cursor-pointer">
-                <div class="bg-black h-[200px] rounded-2xl mb-2"></div>
-                <div class="text-2xl font-semibold">Title here</div>
-                <div class="text-sm text-gray-500 mb-2">Author here</div>
-                <div class="text-black mb-4">Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut officia molestias placeat minima nisi quasi quam animi harum. Vero eaque nam perferendis ut sapiente velit at beatae quidem voluptatem eos!</div>
-                <button class="text-white bg-green-700 py-2 px-5 rounded-xl cursor-pointer">Read more</button>
+            @foreach ($posts as $post)
+                <div class="cursor-pointer">
+                    <div class="h-[200px] rounded-2xl mb-2 bg-cover bg-center"
+                        style="background-image: url('{{ $post->media->first()?->url }}')">
+                    </div>                    
+                    <div class="text-2xl font-semibold">{{$post->title}}</div>
+                    <div class="flex gap-5 text-gray-600 my-2">
+                        <span class="flex items-center"><x-css-profile class="h-4"/>{{ $post->users->name}}</span>
+                        <span class="flex gap-1 items-center">
+                            <x-zondicon-time class="h-3" />
+                            {{ date('M d, Y', strtotime($post->publication_date)) }}
+                        </span>                    
+                    </div>
+                    <div class="text-black mb-4">{{$post->content}}</div>
+                    <a class="text-white bg-green-700 py-3 px-5 rounded-xl cursor-pointe mt-3" href="{{ route('posts.show', $post->id) }}">Read more</a>
+                </div>
+            @endforeach
+            
+            <div class="mt-6">
+                {{ $posts->links() }}
             </div>
-
-            <div class="cursor-pointer">
-                <div class="bg-black h-[200px] rounded-2xl mb-2"></div>
-                <div class="text-2xl font-semibold">Title here</div>
-                <div class="text-sm text-gray-500 mb-2">Author here</div>
-                <div class="text-black mb-4">Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut officia molestias placeat minima nisi quasi quam animi harum. Vero eaque nam perferendis ut sapiente velit at beatae quidem voluptatem eos!</div>
-                <button class="text-white bg-green-700 py-2 px-5 rounded-xl cursor-pointer">Read more</button>
-            </div>
-
-            <div class="cursor-pointer">
-                <div class="bg-black h-[200px] rounded-2xl mb-2"></div>
-                <div class="text-2xl font-semibold">Title here</div>
-                <div class="text-sm text-gray-500 mb-2">Author here</div>
-                <div class="text-black mb-4">Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut officia molestias placeat minima nisi quasi quam animi harum. Vero eaque nam perferendis ut sapiente velit at beatae quidem voluptatem eos!</div>
-                <button class="text-white bg-green-700 py-2 px-5 rounded-xl cursor-pointer">Read more</button>
-            </div>
+          
         </div>
     </div>
     

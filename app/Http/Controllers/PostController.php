@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Post;
 use Illuminate\Http\Request;
 
@@ -10,9 +11,20 @@ class PostController extends Controller
     /**
      * Display a listing of the resource.
      */
+
     public function index()
     {
-        return view('posts.index');
+        $posts = Post::whereNotNull('publication_date')
+            ->with(['users', 'media', 'categories'])
+            ->orderBy('publication_date', 'desc')
+            ->paginate(10);
+
+        return view(
+            'posts.index',
+            [
+                'posts' => $posts
+            ]
+        );
     }
 
     /**
@@ -36,7 +48,12 @@ class PostController extends Controller
      */
     public function show(string $id)
     {
-        return view('posts.store');
+        $post = Post::with('categories')->find($id);
+        $others = Post::with('categories')->inRandomOrder()->take(3)->get();
+        return view('posts.show', [
+            'post' => $post,
+            'others' => $others
+        ]);
     }
 
     /**
