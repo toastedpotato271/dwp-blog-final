@@ -30,6 +30,7 @@ class CommentFactory extends Factory
             'reviewer_name' => $user->find($userID)->name,
             'comment_context' => fake()->paragraph(),
             'reviewer_email' => $user->find($userID)->email,
+            'created_at' => fake()->dateTimeBetween('-1 year', 'now'),
         ];
     }
 }

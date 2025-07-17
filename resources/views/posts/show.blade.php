@@ -9,6 +9,9 @@
     <div class="flex gap-5 text-gray-600 mb-5">
         <span class="flex items-center"><x-css-profile class="h-4"/>{{ $post->users->name }}</span>
         <span class="flex gap-1 items-center"><x-zondicon-time class="h-3"/>{{ date('M d, Y', strtotime($post->publication_date)) }}</span>
+        <span class="flex gap-1 items-center">
+            <x-heroicon-o-eye class="h-5"/>{{ $post->views_count }}
+        </span>   
         @foreach($post->categories as $category)
             <span class="bg-red-800 inline-block px-5 py-2 text-white rounded-2xl">
                 {{ $category->category_name }}
@@ -39,19 +42,32 @@
 
     <!-- 🧍 Sample Comment -->
     <div class="flex gap-4">
-        <img
-            src="https://i.pravatar.cc/40?u=1"
-            alt="User avatar"
-            class="w-10 h-10 rounded-full"
-        />
         <div class="flex-1">
-            <div class="flex justify-between items-center">
-                <h3 class="font-semibold text-sm">Jane Doe</h3>
-                <span class="text-xs text-gray-500">Jul 14, 2025</span>
-            </div>
-            <p class="mt-1 text-gray-700 text-sm">
-                This blog really helped me understand budgeting better. Keep up the great work!
-            </p>
+            @foreach ($comments as $comment)
+                <div class="mb-10">
+                    <img
+                        src="https://i.pravatar.cc/40?u=1"
+                        alt="User avatar"
+                        class="w-10 h-10 rounded-full mb-2"
+                    />
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-semibold text-sm">{{$comment->users->name}}</h3>
+                        <span class="flex gap-1 items-center text-sm">
+                            <x-zondicon-time class="h-2" />
+                            {{ date('M d, Y', strtotime($comment->created_at)) }}
+                        </span> 
+                    </div>
+                    <p class="mt-1 text-gray-700 text-sm">
+                        {{$comment->comment_context}}
+                    </p>
+                </div>
+            @endforeach
+
+            @if ($comments->isEmpty())
+                <div class="flex justify-center items-center py-10">
+                    <span class="text-lg text-gray-500">There are no comments yet...</span>
+                </div>
+            @endif
         </div>
     </div>
 </div>

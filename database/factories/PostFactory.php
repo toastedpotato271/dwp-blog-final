@@ -19,13 +19,13 @@ class PostFactory extends Factory
     public function definition(): array
     {
         $userID = User::inRandomOrder()->value('id');
-        $title = fake()->word();
+        $title = ucfirst(fake()->words(3, true));;
         $status = fake()->randomElement(['D', 'P', 'I']);
 
         return [
             "user_id" => $userID,
             "title" => $title,
-            "content" => fake()->paragraph(),
+            "content" => fake()->paragraph(30),
             "slug" => Str::slug($title),
             "publication_date" => $status == 'P' ? fake()->dateTimeBetween('-1 year', 'now') : null,
             "status" => $status,

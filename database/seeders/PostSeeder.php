@@ -31,5 +31,11 @@ class PostSeeder extends Seeder
 
                         $post->save();
                 });
+
+                $randomPost = Post::where('publication_date', '!=', null)->inRandomOrder()->first();
+
+                if ($randomPost) {
+                        $randomPost->update(['featured_post' => true]);
+                }
         }
 }
