@@ -22,7 +22,7 @@ class PostSeeder extends Seeder
                         return;
                 };
 
-                Post::factory(100)->make()->each(function ($post) use ($user) {
+                Post::factory(200)->make()->each(function ($post) use ($user) {
                         $post->user_id = $user->random()->id;
 
                         if ($post->publication_date != null) {

@@ -3,8 +3,8 @@
     <!-- Links -->
     <div class="space-y-2">
         <div class="text-xl font-semibold">Links</div>
-        <div><a href="#" class="hover:underline">Home</a></div>
-        <div><a href="#" class="hover:underline">Blogs</a></div>
+        <div><a href="{{route('landing')}}" class="hover:underline">Home</a></div>
+        <div><a href="{{route('posts.index')}}" class="hover:underline">Blogs</a></div>
         <div><a href="#" class="hover:underline">About Us</a></div>
         <div><a href="#" class="hover:underline">Contact Us</a></div>
         <div><a href="#" class="hover:underline">Feedback</a></div>
@@ -12,22 +12,22 @@
 
     <!-- Categories -->
     <div class="space-y-2">
-        <div class="text-xl font-semibold">Categories</div>
-        <div>Budgeting & Savings</div>
-        <div>Investing</div>
-        <div>Debt & Credit</div>
-        <div>Financial Planning</div>
-        <div>Career & Income</div>
+        <div class="text-xl font-semibold ">Categories</div>
+        <a class="block cursor-pointer" href="{{ route('posts.index', ['category' => "budgeting-savings"]) }}">Budgeting & Savings</a>
+        <a class="block cursor-pointer" href="{{ route('posts.index', ['category' => "investing"]) }}">Investing</a>
+        <a class="block cursor-pointer" href="{{ route('posts.index', ['category' => "debt-credit"]) }}">Debt & Credit</a>
+        <a class="block cursor-pointer" href="{{ route('posts.index', ['category' => "financial-planning"]) }}">Financial Planning</a>
+        <a class="block cursor-pointer" href="{{ route('posts.index', ['category' => "career-income"]) }}">Career & Income</a>
     </div>
 
     <!-- Socials -->
     <div class="space-y-2">
         <div class="text-xl font-semibold">Socials</div>
-        <div><a href="#" class="hover:underline">Facebook</a></div>
-        <div><a href="#" class="hover:underline">Instagram</a></div>
-        <div><a href="#" class="hover:underline">X</a></div>
-        <div><a href="#" class="hover:underline">TikTok</a></div>
-        <div><a href="#" class="hover:underline">LinkedIn</a></div>
+        <div><a href="#" class="hover:underline" href="www.facebook.com">Facebook</a></div>
+        <div><a href="#" class="hover:underline" href="www.instagram.com">Instagram</a></div>
+        <div><a href="#" class="hover:underline" href="www.x.com">X</a></div>
+        <div><a href="#" class="hover:underline" href="www.tiktok.com">TikTok</a></div>
+        <div><a href="#" class="hover:underline" href="www.linkedin.com">LinkedIn</a></div>
     </div>
 </div>
            

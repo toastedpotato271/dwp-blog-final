@@ -26,7 +26,6 @@ class CommentFactory extends Factory
 
         return [
             'user_id' => $userID,
-            'post_id' => $postID,
             'reviewer_name' => $user->find($userID)->name,
             'comment_context' => fake()->paragraph(),
             'reviewer_email' => $user->find($userID)->email,
