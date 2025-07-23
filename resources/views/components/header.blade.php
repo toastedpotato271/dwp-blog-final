@@ -6,7 +6,15 @@
         <a class="cursor-pointer" href="{{route('posts.create')}}">Create</a>
     </div>
     <div class="col-span-1 font-semibold text-lg flex gap-2 justify-end">
-        <a class="px-5 py-2 cursor-pointer">Log In</a>
-        <a class="bg-green-700 rounded-2xl text-white px-5 py-2 cursor-pointer">Sign up</a>
+
+        @auth
+            <form method="POST" action="{{route('logout')}}">
+                @csrf
+                <button type="submit" class="bg-green-700 rounded-2xl text-white px-5 py-2 cursor-pointer">Logout</button>
+            </form>
+        @else
+            <a class="bg-green-700 rounded-2xl text-white px-5 py-2 cursor-pointer" href={{route('login')}}>Login</a>
+        @endauth
+    
     </div>
 </div>
