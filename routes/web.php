@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\CommentController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [LandingController::class, 'index'])->name('landing');
@@ -20,6 +21,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('roles', RoleController::class);
     Route::resource(name: 'posts', controller: PostController::class); // this one has all our posts functions - call the functions in blade view instead
+    Route::resource(name: 'comments', controller: CommentController::class); // this one has all our posts functions - call the functions in blade view instead
 });
 
 

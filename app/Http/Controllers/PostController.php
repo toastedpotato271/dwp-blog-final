@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use App\Models\Comment;
+
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use App\Models\User;
 
 
 
@@ -87,7 +88,7 @@ class PostController extends Controller
                 }
             }
 
-            // Step 3: If failed, check which host it come from.
+            // Step 3: If failed, check which host it come from. - unsplash most trusted
             $trustedHosts = ['images.unsplash.com', 'plus.unsplash.com'];
             if (in_array($host, $trustedHosts)) {
                 return true;
@@ -95,6 +96,7 @@ class PostController extends Controller
 
             return false;
         };
+        $isValidImageLink($validated_request_items["post_image"]);
 
         // 1: ❌ Reject bad image links
         $valid_image_link_flag = $validated_request_items['post_image'];
@@ -147,30 +149,36 @@ class PostController extends Controller
             Log::error("Post.create - Exception occurred: " . $e->getMessage());
         }
 
-
-
-        // Step 4: Redirect or return view
+        // Step 5: Redirect user to post.create;
         Log::info("Post.create - Post Store Function END");
         return redirect()->route('posts.create')->with('success', 'Post created successfully!');
     }
-
-
-
-
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
-        $posts = Post::with('categories')->find($id);
+
+        Log::info("Post.show - user is in show page - targeted post to show ---> $id");
+
+        // Step 1: Retrieve the post or fail
+        $post = Post::with('categories')->findOrFail($id);
+
+        // Step 2: Increment view count
+        $post->increment('views_count');
+
+        // Step 3: Get other data
         $others = Post::with('categories')->inRandomOrder()->take(3)->get();
+        $comments = $post->comments()->with('users')->get();
+        $user_id = Auth::id();
+        $user_object = User::find($user_id); // returns the User model or null
 
-        $comments = $posts->comments()->with('users')->get();
-
+        // Step 4: Return view
         return view('posts.show', [
-            'post' => $posts,
+            'post' => $post,
             'comments' => $comments,
-            'others' => $others
+            'others' => $others,
+            'user_object_of_the_one_looking_at_this_page' => $user_object,
         ]);
     }
 

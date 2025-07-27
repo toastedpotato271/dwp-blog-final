@@ -27,18 +27,29 @@
 <div class="px-15 mb-10 mt-10 max-w-2xl mx-auto space-y-8">
 
     <!-- 💬 Comment Form -->
-    <div class="space-y-3">
-        <h2 class="text-xl font-semibold">Leave a Comment</h2>
-        <textarea
-            placeholder="Write your comment here..."
-            class="w-full h-28 p-4 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-        ></textarea>
-        <div class="flex justify-end">
-            <button class="px-4 py-2 bg-green-800 text-white rounded-2xl transition cursor-pointer">
-                Post Comment
-            </button>
+
+
+    <form action="{{ route('comments.store') }}" method="POST">
+        @csrf
+        <div class="space-y-3">
+            {{-- Get the user's content and leave --}}
+            <h2 class="text-xl font-semibold">Leave a Comment</h2>
+            <input type="hidden" name="post_id" value="{{ $post->id }}">
+            <textarea
+                name="comment_context"
+                placeholder="Write your comment here..."
+                class="w-full h-28 p-4 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+            ></textarea>
+            <div class="flex justify-end">
+                <button type="submit" class="px-4 py-2 bg-green-800 text-white rounded-2xl transition cursor-pointer">
+                    Post Comment
+                </button>
+            </div>
         </div>
-    </div>
+    </form>
+
+    
 
     <!-- 🧍 Sample Comment -->
     <div class="flex gap-4">
