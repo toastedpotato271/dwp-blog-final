@@ -51,6 +51,11 @@ class User extends Authenticatable
         ];
     }
 
+    public function hasRole($roleName)
+    {
+        return $this->roles->contains('role_name', $roleName);
+    }
+
     // User's Relationships to other Models:
 
     public function roles(): BelongsToMany

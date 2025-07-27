@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Validation\ValidationException;
 use Exception;
@@ -11,6 +12,7 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+
     public function showLoginForm()
     {
         return view('auth.login');
@@ -60,6 +62,8 @@ class AuthController extends Controller
                 'email' => $validateData['email'],
                 'password' => Hash::make($validateData['password']),
             ]);
+
+            $user->roles()->attach(3);
         } catch (Exception $e) {
             throw $e;
         };
