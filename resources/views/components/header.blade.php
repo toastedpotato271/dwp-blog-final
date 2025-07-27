@@ -3,7 +3,14 @@
     <div class="col-span-2 font-semibold text-lg flex gap-15 justify-center">
         <a class="cursor-pointer" href="{{route('landing')}}">Home</a>
         <a class="cursor-pointer" href="{{route('posts.index')}}">Blogs</a>
-        <a class="cursor-pointer" href="{{route('posts.create')}}">Create</a>
+
+        @auth
+            @if (!auth()->user()->hasRole('S'))
+                <a class="cursor-pointer" href="{{route('posts.create')}}">Create</a>
+                <a class="cursor-pointer" href="{{route('dashboard.index')}}">Dashboard</a>
+            @endif
+        @endauth
+
     </div>
     <div class="col-span-1 font-semibold text-lg flex gap-2 justify-end">
 
