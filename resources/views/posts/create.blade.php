@@ -17,15 +17,23 @@
                 class="w-full h-50 p-4 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
             ></textarea>
             <input name="post_image" type="image-link" placeholder="Image Link" class="w-full h-10 p-4 mb-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
-            <select
-                name="post_category"
-                class="w-full h-10 px-4 mb-2 border border-gray-300 rounded-lg
-                    focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <option value="" class="text-gray-300">Select a category</option>
+            <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 my-2">
+                Select Categories:
+            </label>
+            <div class="grid mb-5">
                 @foreach ($categories as $category)
-                    <option value="{{$category->id}}" class="text-gray-300">{{$category->category_name}}</option>
+                    <label class="inline-flex items-center">
+                        <input 
+                            type="checkbox" 
+                            name="post_category[]" 
+                            value="{{ $category->id }}" 
+                            class="form-checkbox text-blue-600"
+                            {{ in_array($category->id, old('post_category', [])) ? 'checked' : '' }}>
+                        <span class="ml-2 text-gray-700">{{ $category->category_name }}</span>
+                    </label>
                 @endforeach
-            </select>
+            </div>
             <!-- TAG INPUT -->
             <div id="tagBox" class="w-full mb-3">
             <!-- existing tags get injected here -->

@@ -71,7 +71,8 @@ class PostController extends Controller
             'post_title' => 'required|string|max:255',
             'post_content' => 'required|string',
             'post_image' => 'nullable|string',
-            'post_category' => 'nullable|string',
+            'post_category' => 'nullable|array',
+            'post_category.*' => 'exists:categories,id',
             'post_tag' => 'nullable|string', // JSON string of tags from hidden input
         ]);
 
@@ -130,9 +131,7 @@ class PostController extends Controller
         // Step 4: Create the Post
         $post = new Post();
         $post->title = $validated_request_items['post_title'];
-
         $post->slug = $newSlug;
-
         $post->status = 'D'; // D - Draft
         $post->content = $validated_request_items['post_content'];
         $post->featured_image_url = $validated_request_items['post_image'] ?? null;
@@ -140,8 +139,13 @@ class PostController extends Controller
         $post->last_modified_date = now();
         $post->user_id = Auth::id();
 
+        $post->save();
+
         try {
             if ($post->save()) {
+
+                $post->categories()->sync($request->post_category ?? []);
+
                 Log::info("Post.create - Post successfully published and saved to DB");
             } else {
                 Log::warning("Post.create - Post.save() returned false");
