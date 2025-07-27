@@ -15,12 +15,12 @@ return new class extends Migration
             $table->id('id');
             $table->string('title');
             $table->text('content');
-            $table->string('slug');
+            $table->string('slug')->comment("better name in the address bar");
             $table->timestamp('publication_date')->nullable();
             $table->timestamp('last_modified_date')->nullable();
             $table->string('status')->max(1)->comment('D - Draft, P - Published, I - Inactive)');
             $table->text('featured_image_url');
-            $table->integer('views_count')->default(0);
+            $table->integer('views_count')->default(0)->comment("the number of times the post has been viewed.");
         });
     }
 

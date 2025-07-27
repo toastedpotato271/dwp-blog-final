@@ -15,7 +15,21 @@ Route::post('/register', [AuthController::class, 'register']);
 
 
 Route::middleware('auth')->group(function () {
+    // (Auth Users) can access these functions.
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
     Route::resource('roles', RoleController::class);
-    Route::resource('posts', PostController::class);
+    Route::resource(name: 'posts', controller: PostController::class); // this one has all our posts functions - call the functions in blade view instead
+});
+
+
+Route::get('/db-check', function () {
+    $path = config('database.connections.sqlite.database');
+    return response()->json([
+        'expected_path' => $path,
+        'file_exists' => file_exists($path),
+        'realpath' => realpath($path),
+        'writable' => is_writable($path),
+        'current_posts' => \App\Models\Post::count(),
+    ]);
 });
