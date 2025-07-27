@@ -5,9 +5,9 @@
         <a class="cursor-pointer" href="{{route('posts.index')}}">Blogs</a>
 
         @auth
-            @if (!auth()->user()->hasRole('S'))
+            @if (!auth()->user()->hasRole('C'))
                 <a class="cursor-pointer" href="{{route('posts.create')}}">Create</a>
-                <a class="cursor-pointer" href="{{route('dashboard.index')}}">Dashboard</a>
+                {{-- <a class="cursor-pointer" href="{{route('dashboard.index')}}">Dashboard</a> --}}
             @endif
         @endauth
 

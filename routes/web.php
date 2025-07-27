@@ -21,7 +21,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('roles', RoleController::class);
     Route::resource(name: 'posts', controller: PostController::class); // this one has all our posts functions - call the functions in blade view instead
-    Route::resource(name: 'comments', controller: CommentController::class); // this one has all our posts functions - call the functions in blade view instead
+    Route::resource('comments', controller: CommentController::class); // this one has all our posts functions - call the functions in blade view instead
 });
 
 

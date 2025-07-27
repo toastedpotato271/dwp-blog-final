@@ -26,11 +26,26 @@
                 @foreach ($latestPosts as $post)
                     <div class="cursor-pointer">
                         <div class="bg-black h-[200px] rounded-2xl mb-2"></div>
-                            @foreach ($post->categories as $category)
-                                <div class="text-red-600 font-semibold mb-2">{{$category->category_name}}</div>
-                            @endforeach
+
+                           <div class="my-2 mr-3 text-xs flex flex-wrap gap-1">
+                                @foreach ($post->categories as $category)
+                                    <span class="px-2 py-1 rounded-full text-white
+                                        @switch($category->category_name)
+                                            @case('Budgeting & Savings') bg-green-600 @break
+                                            @case('Investing') bg-blue-600 @break
+                                            @case('Debt & Credit') bg-red-600 @break
+                                            @case('Financial Planning') bg-purple-600 @break
+                                            @case('Career & Income') bg-yellow-500 text-black @break
+                                            @default bg-gray-500 @break
+                                        @endswitch
+                                    ">
+                                        {{ $category->category_name }}
+                                    </span>
+                                @endforeach
+                            </div>
+                                            
                         <div class="text-2xl font-semibold">{{$post->title}}</div>
-                        <div class="flex gap-5 text-gray-600 my-2">
+                        <div class="flex gap-3 text-gray-600 my-2 text-xs">
                             <span class="flex items-center"><x-css-profile class="h-4"/>{{ $post->users->name}}</span>
                             <span class="flex gap-1 items-center">
                                 <x-zondicon-time class="h-3" />

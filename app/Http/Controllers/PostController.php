@@ -165,7 +165,6 @@ class PostController extends Controller
      */
     public function show(string $id)
     {
-
         Log::info("Post.show - user is in show page - targeted post to show ---> $id");
 
         // Step 1: Retrieve the post or fail
@@ -194,7 +193,27 @@ class PostController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        Log::info("Post.create - Showing edit creation Page Form. START");
+
+        // Step 1: Query the targeted post.
+        $parsedId = (int) $id;
+        $post_object = Post::findOrFail($parsedId);
+
+        // Step 2: Check if post belongs to (AuthUser)
+        $user_id_of_the_one_looking_at_this_page = Auth::id();
+        $post_object_id = $post_object->user_id;
+        $isOwnerOfPost = $post_object->user_id === $user_id_of_the_one_looking_at_this_page;
+
+        // Step 3: If Fail Redirect user with error. If Not Continue editing post.
+        if (!$isOwnerOfPost) {
+            abort(403, 'Unauthorized action.'); // Or redirect with an error
+            return;
+        }
+
+        // From here onward, user can now edit whatever in post.
+
+
+        Log::info("Post.show - Edit function END");
     }
 
     /**
@@ -202,7 +221,12 @@ class PostController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        Log::info("Post.show - Update function START");
+
+
+
+
+        Log::info("Post.show - Update function END");
     }
 
     /**
