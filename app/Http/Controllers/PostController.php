@@ -50,7 +50,10 @@ class PostController extends Controller
     public function create()
     {
         Log::info("Post.create - Showing post creation form.");
-        return view('posts.create');
+
+        $categories = Category::all();
+
+        return view('posts.create', ['categories' => $categories]);
     }
 
 

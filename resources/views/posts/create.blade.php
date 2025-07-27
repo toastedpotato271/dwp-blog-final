@@ -22,8 +22,9 @@
                 class="w-full h-10 px-4 mb-2 border border-gray-300 rounded-lg
                     focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="" class="text-gray-300">Select a category</option>
-                <option value="BS" class="text-gray-300">Budgeting & Savings</option>
-                <option value="IS" class="text-gray-300">Investing</option>
+                @foreach ($categories as $category)
+                    <option value="{{$category->id}}" class="text-gray-300">{{$category->category_name}}</option>
+                @endforeach
             </select>
             <!-- TAG INPUT -->
             <div id="tagBox" class="w-full mb-3">
