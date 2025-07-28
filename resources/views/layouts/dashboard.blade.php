@@ -64,6 +64,24 @@
                     <span class="font-medium">User Management</span>
                 </a>
 
+                <a href="{{ route('roles.index') }}" 
+                   class="flex items-center space-x-3 px-3 py-2 rounded-lg {{ request()->routeIs('roles.index') ? 'text-white' : 'text-gray-700 hover:bg-gray-100' }}"
+                   style="{{ request()->routeIs('roles.index') ? 'background-color: #008236;' : '' }}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-6.13a4 4 0 11-8 0 4 4 0 018 0zm6 6.13A4 4 0 0017 20m-6-6.13A4 4 0 0011 20" />
+                    </svg>
+                    <span class="font-medium">Role List</span>
+                </a>
+
+                <a href="{{ route('categories.index') }}" 
+                   class="flex items-center space-x-3 px-3 py-2 rounded-lg {{ request()->routeIs('categories.index') ? 'text-white' : 'text-gray-700 hover:bg-gray-100' }}"
+                   style="{{ request()->routeIs('categories.index') ? 'background-color: #008236;' : '' }}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-6.13a4 4 0 11-8 0 4 4 0 018 0zm6 6.13A4 4 0 0017 20m-6-6.13A4 4 0 0011 20" />
+                    </svg>
+                    <span class="font-medium">Category List</span>
+                </a>
+
                 <a href="{{ route('home') }}" 
                    class="flex items-center space-x-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

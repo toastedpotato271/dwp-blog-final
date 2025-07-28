@@ -7,7 +7,7 @@
         @auth
             @if (!auth()->user()->hasRole('S'))
                 <a class="cursor-pointer" href="{{route('posts.create')}}">Create</a>
-                <a class="cursor-pointer" href="{{route('dashboard.index')}}">Dashboard</a>
+                <a class="cursor-pointer" href="{{route('dashboard')}}">Dashboard</a>
             @endif
         @endauth
 

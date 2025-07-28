@@ -20,7 +20,9 @@ class RelationshipSeeder extends Seeder
         foreach ($users as $user) {
             DB::table('user_role')->insert([
                 'user_id' => $user->id,
-                'role_id' => fake()->randomElement($roles),
+                'role_id' => $user->email === 'admin@test.com'
+                    ? 1 // or the actual Admin role ID
+                    : fake()->randomElement($roles),
             ]);
         }
 

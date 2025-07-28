@@ -1,8 +1,8 @@
-@extends('layouts.master')
+@extends('layouts.dashboard')
 
 @section('content')
-<div class="container mx-auto mb-10 bg-white p-6 rounded-lg w-full max-w-md">
-    <h1 class="text-3xl font-bold text-gray-800 mb-6">Edit Role</h1>
+<div class="container mx-auto mb-10 bg-white p-6 rounded-lg shadow w-full max-w-md mt-10">
+    <h1 class="text-xl font-bold text-gray-800 mb-6">Edit Role</h1>
 
     <!-- Display Validation Errors -->
     @if ($errors->any())
@@ -23,13 +23,13 @@
         <!-- Use PUT method for updates -->
 
         <div class="mb-4">
-            <label for="category_name" class="block text-gray-700 text-lg font-bold mb-2">Role Name</label>
+            <label for="category_name" class="block text-gray-700 text-md font-bold mb-2">Role Name</label>
             <input type="text" id="category_name" name="category_name" value="{{ old('category_name', $category->category_name) }}" required
                 class="appearance-none border rounded-2xl w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500">
         </div>
 
         <div class="mb-4">
-            <label for="description" class="block text-gray-700 text-lg font-bold mb-2">Description</label>
+            <label for="description" class="block text-gray-700 text-md font-bold mb-2">Description</label>
             <textarea type="text" id="description" name="description"
                 required
                 class="h-50 resize-none appearance-none border rounded-2xl w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500">{{ old('description', $category->description) }}
@@ -38,12 +38,12 @@
 
         <div class="flex justify-between items-center mt-6">
             <button type="submit"
-                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
+                class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2 px-4 rounded-2xl focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
                 Update
             </button>
             <a href="{{ route('categories.index') }}"
-                class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-2xl transition duration-150 ease-in-out">
-                <x-tabler-x />
+                class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-3 rounded-2xl transition duration-150 ease-in-out">
+                <x-tabler-x class="h-5"/>
             </a>
         </div>
     </form>
