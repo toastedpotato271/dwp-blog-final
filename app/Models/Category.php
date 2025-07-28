@@ -11,6 +11,12 @@ class Category extends Model
     use HasFactory;
     public $timestamps = false;
 
+    protected $fillable = [
+        'category_name',
+        'description',
+        'slug'
+    ];
+
     public function posts(): BelongsToMany
     {
         return $this->belongsToMany(Post::class, 'post_category');
