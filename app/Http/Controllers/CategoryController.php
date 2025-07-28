@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Exception;
+use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
@@ -13,7 +15,7 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::all();
-        return view('category.index', ['category_name' => $categories]);
+        return view('categories.index', ['categories' => $categories]);
     }
 
     /**
@@ -21,7 +23,7 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        //
+        return view('categories.create');
     }
 
     /**
@@ -29,15 +31,18 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        $validateData = $request->validate([
+            'category_name' => 'required|max:255',
+            'description'   => 'nullable|max:255',
+        ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
+        $validateData['slug'] = Str::slug($validateData['category_name']);
+
+        $category = Category::create($validateData);
+
+        return redirect()
+            ->route('categories.index')
+            ->with('success', 'Category created successfully');
     }
 
     /**
@@ -45,7 +50,8 @@ class CategoryController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $category = Category::find($id);
+        return view('categories.edit', ['category' => $category]);
     }
 
     /**
@@ -53,7 +59,18 @@ class CategoryController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validateData = $request->validate([
+            'category_name' => 'required|max:255',
+            'description' => 'max:255'
+        ]);
+
+        $validatedData['slug'] = Str::slug($validateData['category_name']);
+
+        $category = Category::find($id);
+        $category->update($validateData);
+        return redirect()
+            ->route('categories.index')
+            ->with('success', 'Role updated successfully');
     }
 
     /**
@@ -61,6 +78,18 @@ class CategoryController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $category = Category::findOrFail($id);
+
+        try {
+            $category->delete();
+            return redirect()
+                ->route('categories.index')
+                ->with('success', 'Category deleted successfully');
+        } catch (Exception $e) {
+            if ($e->getCode() == '23000') {
+                return redirect()->route('categories.index')->with('error', 'Category is linked some posts.');
+            }
+            throw $e;
+        }
     }
 }

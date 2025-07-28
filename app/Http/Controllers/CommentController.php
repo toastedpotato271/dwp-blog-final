@@ -54,7 +54,9 @@ class CommentController extends Controller
         $comment->reviewer_name = $user->name;
         $comment->reviewer_email = $user->email;
         $comment->user_id = $user->id;
+        $comment->created_at = now();
         $comment->post_id = $validated_request_items["post_id"];
+
         $comment->is_hidden = false; // or default to your model's value
         $comment->updated_at = null; // optional, usually auto-managed
 
@@ -77,14 +79,10 @@ class CommentController extends Controller
         Log::info("Comment.store - Comment Store function END");
     }
 
-
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        //
-    }
+    public function show(string $id) {}
 
     /**
      * Show the form for editing the specified resource.
@@ -92,22 +90,42 @@ class CommentController extends Controller
     public function edit(string $id)
     {
         Log::info("Comment.store - Comment Update function START");
+
+
+
+
         Log::info("Comment.store - Comment Update function END");
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+    public function update(Request $request, string $id) {}
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-        //
+        Log::info("Comment.destroy - Comment destroy function START");
+
+        // Remember, users can still tamper the values from client side, so we don't want users to delete any comment without checking.
+
+        // Step 1: Get the ID of the ;
+        $comment_object = Comment::findOrFail($id);
+
+        // Step 2: Check if the targeted comment belongs to the currently logged-in user
+        $user_id_of_the_one_looking_at_this_page = Auth::id();
+        $isOwner = $comment_object->user_id === $user_id_of_the_one_looking_at_this_page;
+
+        // Step 3: Redirect user with error.
+        if (!$isOwner) {
+            abort(403, 'Unauthorized action.'); // Or redirect with an error
+            return;
+        }
+
+        $comment_object->delete();
+        Log::info("Comment.destroy - Comment $id was deleted. Function END");
+        return redirect()->back()->with('success', 'Comment is GONE!');
     }
 }

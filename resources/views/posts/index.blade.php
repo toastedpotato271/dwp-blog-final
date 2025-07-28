@@ -32,13 +32,8 @@
                             style="background-image: url('{{ $post->media->first()?->url }}')">
                         </div>                    
                         <div class="text-2xl font-semibold">{{$post->title}}</div>
-                        <div class="flex gap-5 text-gray-600 my-2">
-                            <span class="flex items-center">
-                                <svg class="h-4 w-4 mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                </svg>
-                                {{ $post->users->name}}
-                            </span>
+                        <div class="flex gap-3 text-gray-600 my-2 text-xs">
+                            <span class="flex items-center"><x-css-profile class="h-4"/>{{ $post->users->name}}</span>
                             <span class="flex gap-1 items-center">
                                 <svg class="h-3 w-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>

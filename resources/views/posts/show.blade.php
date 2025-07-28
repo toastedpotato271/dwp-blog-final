@@ -4,6 +4,24 @@
 
 <a class="flex items-center gap-2 px-15 mb-10 mt-5 text-green-800 cursor-pointer" href="{{route('landing')}}"><x-ri-arrow-left-long-line class="h-5"/>Back to home</a>
 
+<a href="{{ route('posts.edit', $post->id) }}" class="cursor-pointer bg-green-700 text-white p-3 rounded-2xl ml-15">Update</a>
+
+
+ <!-- Delete Button (using a form for POST request) -->
+ <div class="mt-5">
+ <form action="{{ route('posts.destroy', $post->id) }}" method="POST"
+                                onsubmit="return confirm('Are you sure you want to delete this role?');">
+                                @csrf
+                                @method('DELETE')
+
+        <button type="submit"
+            class="cursor-pointer bg-red-700 text-white p-3 rounded-2xl ml-15">
+            Delete
+        </button>
+    </form>
+ </div>
+                           
+
 <div class="px-15 mt-5">
     <div class="text-4xl font-semibold mt-4 mb-1">{{ $post->title }}</div>
     <div class="flex gap-5 text-gray-600 mb-5">
@@ -26,11 +44,24 @@
             </svg>
             {{ $post->views_count }}
         </span>   
-        @foreach($post->categories as $category)
-            <span class="bg-red-800 inline-block px-5 py-2 text-white rounded-2xl">
+
+        <div class="my-2 mr-3 text-xs flex flex-wrap gap-1">
+            @foreach ($post->categories as $category)
+                <span class="px-2 py-1 rounded-full text-white
+                    @switch($category->category_name)
+                        @case('Budgeting & Savings') bg-green-600 @break
+                        @case('Investing') bg-blue-600 @break
+                        @case('Debt & Credit') bg-red-600 @break
+                        @case('Financial Planning') bg-purple-600 @break
+                        @case('Career & Income') bg-yellow-500 text-black @break
+                        @default bg-gray-500 @break
+                    @endswitch
+                ">
                 {{ $category->category_name }}
-            </span>
-        @endforeach    
+                </span>
+            @endforeach
+        </div>
+     
     </div>
     <div class="rounded-2xl h-90 mb-10 bg-cover bg-center" style="background-image: url('{{ $post->media->first()?->url }}')"></div>
     <div class="leading-7">
@@ -68,7 +99,54 @@
     <!-- 🧍 Sample Comment -->
     <div class="flex gap-4">
         <div class="flex-1">
+
             @foreach ($comments as $comment)
+                @if (auth()->user()->id === $comment->user_id)
+
+                {{-- <form action="{{ route('roles.destroy', $role->id) }}" method="POST"
+                                onsubmit="return confirm('Are you sure you want to delete this role?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                    class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-lg text-xs transition duration-150 ease-in-out">
+                                    Delete
+                                </button>
+                            </form> --}}
+
+                    <form class="mb-10" action="{{ route('comments.destroy', $comment->id) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <div class="flex items-center justify-between w-full mb-2">
+                            <img
+                                src="https://i.pravatar.cc/40?u=1"
+                                alt="User avatar"
+                                class="w-10 h-10 rounded-full"
+                            />
+                            
+                            <div class="flex space-x-1 text-gray-400">
+                                <button type="submit"><x-heroicon-s-trash class="h-5 w-5 text-gray-400 cursor-pointer transition-colors hover:text-red-500" /></button>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <h3 class="font-semibold text-sm">{{$comment->users->name}}</h3>
+                            <span class="flex gap-1 items-center text-sm">
+                                <x-zondicon-time class="h-2" />
+                                {{ date('M d, Y', strtotime($comment->created_at)) }}
+                            </span> 
+                        </div>
+                        <p class="mt-1 text-gray-700 text-sm">
+                            {{$comment->comment_context}}
+                        </p>
+                    </form>  
+                @else
+    
+                @endif
+            @endforeach
+
+            <hr class="mb-10">
+            
+            @foreach ($comments as $comment)
+                @if (auth()->user()->id != $comment->user_id)
                 <div class="mb-10">
                     <img
                         src="https://i.pravatar.cc/40?u=1"
@@ -88,6 +166,7 @@
                         {{$comment->comment_context}}
                     </p>
                 </div>
+                @endif
             @endforeach
 
             @if ($comments->isEmpty())
@@ -106,11 +185,22 @@
     @foreach ($others as $other)
         <a class="cursor-pointer" href="{{ route('posts.show', $other->id) }}">
             <div class="h-[200px] rounded-2xl mb-2 bg-cover bg-center" style="background-image: url('{{ $post->media->first()?->url }}')"></div>
-            @foreach($other->categories as $category)
-                <span class="bg-red-800 inline-block px-5 py-2 text-white rounded-2xl">
-                    {{ $category->category_name }}
+            <div class="my-2 mr-3 text-xs flex flex-wrap gap-1">
+            @foreach ($post->categories as $category)
+                <span class="px-2 py-1 rounded-full text-white
+                    @switch($category->category_name)
+                        @case('Budgeting & Savings') bg-green-600 @break
+                        @case('Investing') bg-blue-600 @break
+                        @case('Debt & Credit') bg-red-600 @break
+                        @case('Financial Planning') bg-purple-600 @break
+                        @case('Career & Income') bg-yellow-500 text-black @break
+                        @default bg-gray-500 @break
+                    @endswitch
+                ">
+                {{ $category->category_name }}
                 </span>
-            @endforeach             
+            @endforeach
+        </div>             
         <div class="text-2xl font-semibold">{{$other->title}}</div>
         </a>
     @endforeach

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\PostController;
@@ -21,12 +22,12 @@ Route::prefix('dashboard')->name('dashboard.')->group(function () {
     Route::get('/posts', [DashboardController::class, 'posts'])->name('posts');
     Route::get('/users', [DashboardController::class, 'users'])->name('users');
     Route::get('/analytics', [DashboardController::class, 'analytics'])->name('analytics');
-    
+
     // Post management routes
     Route::post('/posts/{post}/toggle-status', [DashboardController::class, 'togglePostStatus'])->name('posts.toggleStatus');
     Route::delete('/posts/{post}', [DashboardController::class, 'deletePost'])->name('posts.delete');
     Route::post('/posts/bulk', [DashboardController::class, 'bulkPostActions'])->name('posts.bulk');
-    
+
     // User management routes
     Route::delete('/users/{user}', [DashboardController::class, 'deleteUser'])->name('users.delete');
     Route::put('/users/{user}/role', [DashboardController::class, 'updateUserRole'])->name('users.updateRole');
@@ -38,5 +39,21 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::resource('roles', RoleController::class);
-    Route::resource('posts', PostController::class);
+    Route::resource('categories', CategoryController::class);
+
+
+    Route::resource(name: 'posts', controller: PostController::class); // this one has all our posts functions - call the functions in blade view instead
+    Route::resource('comments', controller: CommentController::class); // this one has all our posts functions - call the functions in blade view instead
+});
+
+
+Route::get('/db-check', function () {
+    $path = config('database.connections.sqlite.database');
+    return response()->json([
+        'expected_path' => $path,
+        'file_exists' => file_exists($path),
+        'realpath' => realpath($path),
+        'writable' => is_writable($path),
+        'current_posts' => \App\Models\Post::count(),
+    ]);
 });
