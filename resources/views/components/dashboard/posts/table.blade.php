@@ -1,0 +1,128 @@
+{{-- 
+    Posts Management Table Component
+    
+    Props:
+    - posts: Collection of posts to display
+--}}
+
+@props([
+    'posts'
+])
+
+<table class="min-w-full divide-y divide-gray-200">
+    <thead class="bg-gray-50">
+        <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <input type="checkbox" class="rounded border-gray-300">
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Title
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Author
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Categories
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Status
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Date
+            </th>
+            <th scope="col" class="relative px-6 py-3">
+                <span class="sr-only">Actions</span>
+            </th>
+        </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-gray-200">
+        @if($posts && $posts->count() > 0)
+            @foreach($posts as $post)
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <input type="checkbox" class="rounded border-gray-300" value="{{ $post->id }}">
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm font-medium text-gray-900">
+                            {{ $post->title }}
+                        </div>
+                        @if($post->excerpt)
+                            <div class="text-sm text-gray-500 mt-1">
+                                {{ Str::limit($post->excerpt, 60) }}
+                            </div>
+                        @endif
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center mr-3">
+                                <span class="text-sm font-medium text-gray-600">
+                                    {{ strtoupper(substr($post->user ? $post->user->name : 'N/A', 0, 1)) }}
+                                </span>
+                            </div>
+                            <div class="text-sm text-gray-900">{{ $post->user ? $post->user->name : 'Unknown' }}</div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        @if($post->categories && $post->categories->count() > 0)
+                            <div class="flex flex-wrap gap-1">
+                                @foreach($post->categories->take(2) as $category)
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        {{ $category->category_name }}
+                                    </span>
+                                @endforeach
+                                @if($post->categories->count() > 2)
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        +{{ $post->categories->count() - 2 }}
+                                    </span>
+                                @endif
+                            </div>
+                        @else
+                            <span class="text-sm text-gray-500">No categories</span>
+                        @endif
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        @if($post->status === 'published')
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                Published
+                            </span>
+                        @elseif($post->status === 'draft')
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                Draft
+                            </span>
+                        @elseif($post->status === 'archived')
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                Archived
+                            </span>
+                        @else
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                {{ ucfirst($post->status ?? 'Unknown') }}
+                            </span>
+                        @endif
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ $post->created_at ? $post->created_at->format('M j, Y') : 'No date' }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div class="flex items-center justify-end space-x-3">
+                            <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                            <a href="#" class="text-gray-600 hover:text-gray-900">View</a>
+                            <button type="button" class="text-red-600 hover:text-red-900">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            @endforeach
+        @else
+            <tr>
+                <td colspan="7" class="px-6 py-12 text-center">
+                    <div class="flex flex-col items-center">
+                        <svg class="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">No posts found</h3>
+                        <p class="text-gray-500">Get started by creating your first post.</p>
+                    </div>
+                </td>
+            </tr>
+        @endif
+    </tbody>
+</table>

@@ -22,7 +22,10 @@
         {{-- Adjust background color to match design --}}
         @include('components.header')
 
-        <main class="container mx-auto px-4 pb-10">@yield('content')</main>
+        <main class="container mx-auto px-4 pb-10">
+            @include('layouts.flash-messages')
+            @yield('content')
+        </main>
 
         @include('components.footer')
     </body>

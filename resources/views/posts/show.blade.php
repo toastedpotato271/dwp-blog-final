@@ -7,10 +7,24 @@
 <div class="px-15 mt-5">
     <div class="text-4xl font-semibold mt-4 mb-1">{{ $post->title }}</div>
     <div class="flex gap-5 text-gray-600 mb-5">
-        <span class="flex items-center"><x-css-profile class="h-4"/>{{ $post->users->name }}</span>
-        <span class="flex gap-1 items-center"><x-zondicon-time class="h-3"/>{{ date('M d, Y', strtotime($post->publication_date)) }}</span>
+        <span class="flex items-center">
+            <svg class="h-4 w-4 mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+            {{ $post->users->name }}
+        </span>
         <span class="flex gap-1 items-center">
-            <x-heroicon-o-eye class="h-5"/>{{ $post->views_count }}
+            <svg class="h-3 w-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            {{ date('M d, Y', strtotime($post->publication_date)) }}
+        </span>
+        <span class="flex gap-1 items-center">
+            <svg class="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+            {{ $post->views_count }}
         </span>   
         @foreach($post->categories as $category)
             <span class="bg-red-800 inline-block px-5 py-2 text-white rounded-2xl">
@@ -64,7 +78,9 @@
                     <div class="flex justify-between items-center">
                         <h3 class="font-semibold text-sm">{{$comment->users->name}}</h3>
                         <span class="flex gap-1 items-center text-sm">
-                            <x-zondicon-time class="h-2" />
+                            <svg class="h-2 w-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
                             {{ date('M d, Y', strtotime($comment->created_at)) }}
                         </span> 
                     </div>
