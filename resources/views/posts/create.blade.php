@@ -26,7 +26,7 @@
                     <label class="inline-flex items-center">
                         <input 
                             type="checkbox" 
-                            name="post_category[]" 
+                            name="post_categories[]" 
                             value="{{ $category->id }}" 
                             class="form-checkbox text-blue-600"
                             {{ in_array($category->id, old('post_category', [])) ? 'checked' : '' }}>
@@ -41,7 +41,7 @@
 
             <!-- the input -->
             <input
-                name="post_tag"
+                name="post_tags"
                 id="tagInput"
                 type="text"
                 placeholder="Add a tag and press Enter"
