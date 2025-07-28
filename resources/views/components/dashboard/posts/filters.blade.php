@@ -10,6 +10,7 @@
 @props([
     'categories' => null,
     'currentFilter' => null,
+    'currentSearch' => null,
     'currentCategory' => null
 ])
 
@@ -22,40 +23,23 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                 </svg>
             </div>
-            <input type="text" 
-                   placeholder="Search posts..." 
-                   class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-green-500 focus:border-green-500 sm:text-sm">
+            <form method="GET" action="{{route('dashboard.posts')}}" class="flex items-center gap-3">
+            <input name="search" type="text" value="{{ $currentSearch }}"
+                   placeholder="Search posts via Title or Content..." 
+                   class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                   onkeydown="if(event.key==='Enter'){this.form.submit();}">
+            </form>
         </div>
     </div>
 
     <!-- Filter Controls -->
-    <div class="flex items-center gap-3">
+    <form method="GET" action="{{route('dashboard.posts')}}" class="flex items-center gap-3">
         <!-- Status Filter -->
-        <select class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500">
+        <select name="status" onchange="this.form.submit()" class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500">
             <option value="">All Status</option>
-            <option value="published" {{ $currentFilter === 'published' ? 'selected' : '' }}>Published</option>
-            <option value="draft" {{ $currentFilter === 'draft' ? 'selected' : '' }}>Draft</option>
-            <option value="archived" {{ $currentFilter === 'archived' ? 'selected' : '' }}>Archived</option>
+            <option value="P" {{ $currentFilter === 'P' ? 'selected' : '' }}>Published</option>
+            <option value="D" {{ $currentFilter === 'D' ? 'selected' : '' }}>Draft</option>
+            <option value="I" {{ $currentFilter === 'I' ? 'selected' : '' }}>Inactive</option>
         </select>
-
-        <!-- Category Filter -->
-        @if($categories && $categories->count() > 0)
-            <select class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500">
-                <option value="">All Categories</option>
-                @foreach($categories as $category)
-                    <option value="{{ $category->id }}" {{ $currentCategory == $category->id ? 'selected' : '' }}>
-                        {{ $category->category_name }}
-                    </option>
-                @endforeach
-            </select>
-        @endif
-
-        <!-- Sort Options -->
-        <select class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500">
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-            <option value="title">Title A-Z</option>
-            <option value="status">By Status</option>
-        </select>
-    </div>
+    </form>
 </div>

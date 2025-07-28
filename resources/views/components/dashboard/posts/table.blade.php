@@ -82,29 +82,28 @@ function updateStatus(postId, status) {
                         <div class="flex items-center">
                             <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center mr-3">
                                 <span class="text-sm font-medium text-gray-600">
-                                    {{ strtoupper(substr($post->user ? $post->user->name : 'N/A', 0, 1)) }}
+                                    {{ strtoupper(substr($post->users ? $post->users->name : 'N/A', 0, 1)) }}
                                 </span>
                             </div>
-                            <div class="text-sm text-gray-900">{{ $post->user ? $post->user->name : 'Unknown' }}</div>
+                            <div class="text-sm text-gray-900">{{ $post->users ? $post->users->name : 'Unknown' }}</div>
                         </div>
                     </td>
-                    <td class="px-6 py-4">
-                        @if($post->categories && $post->categories->count() > 0)
-                            <div class="flex flex-wrap gap-1">
-                                @foreach($post->categories->take(2) as $category)
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    <td class="px-6 py-4 text-xs flex flex-wrap">
+                        @foreach ($post->categories as $category)
+                                    <span class="px-2 py-1 rounded-full text-white
+                                        @switch($category->category_name)
+                                            @case('Budgeting & Savings') bg-green-600 @break
+                                            @case('Investing') bg-blue-600 @break
+                                            @case('Debt & Credit') bg-red-600 @break
+                                            @case('Financial Planning') bg-purple-600 @break
+                                            @case('Career & Income') bg-yellow-500 text-black @break
+                                            @default bg-gray-500 @break
+                                        @endswitch
+                                    ">
                                         {{ $category->category_name }}
                                     </span>
-                                @endforeach
-                                @if($post->categories->count() > 2)
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                        +{{ $post->categories->count() - 2 }}
-                                    </span>
-                                @endif
-                            </div>
-                        @else
-                            <span class="text-sm text-gray-500">No categories</span>
-                        @endif
+                        @endforeach
+                          
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <select 

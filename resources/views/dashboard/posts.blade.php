@@ -14,6 +14,7 @@
         :posts="$posts ?? collect()"
         :categories="$categories ?? collect()"
         :currentFilter="request('status')"
+        :currentSearch="request('search')"
         :currentCategory="request('category')"
     />
 </div>

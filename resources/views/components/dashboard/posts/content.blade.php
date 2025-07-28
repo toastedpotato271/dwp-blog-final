@@ -12,6 +12,7 @@
     'posts',
     'categories' => null,
     'currentFilter' => null,
+    'currentSearch' => null,
     'currentCategory' => null
 ])
 
@@ -22,6 +23,7 @@
             :categories="$categories"
             :currentFilter="$currentFilter"
             :currentCategory="$currentCategory"
+            :currentSearch="$currentSearch"
         />
     </div>
 
