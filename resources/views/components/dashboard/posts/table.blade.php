@@ -9,6 +9,32 @@
     'posts'
 ])
 
+<script>
+function updateStatus(postId, status) {
+    fetch(`posts/${postId}/toggle-status`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({ status })
+
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            window.location.reload();
+        } else {
+            alert('Failed to update status');
+        }
+    })
+    .catch(err => console.error(err));
+}
+</script>
+
+
+
 <table class="min-w-full divide-y divide-gray-200">
     <thead class="bg-gray-50">
         <tr>
@@ -81,32 +107,32 @@
                         @endif
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        @if($post->status === 'published')
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                Published
-                            </span>
-                        @elseif($post->status === 'draft')
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                Draft
-                            </span>
-                        @elseif($post->status === 'archived')
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                Archived
-                            </span>
-                        @else
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                                {{ ucfirst($post->status ?? 'Unknown') }}
-                            </span>
-                        @endif
+                        <select 
+                            onchange="updateStatus({{ $post->id }}, this.value)" 
+                            class="border-gray-300 rounded text-xs
+                                @if($post->status === 'P') bg-green-100 text-green-800
+                                @elseif($post->status === 'D') bg-yellow-100 text-yellow-800
+                                @elseif($post->status === 'I') bg-red-100 text-yellow-800
+                                @else bg-gray-100 text-gray-800 @endif">
+                            
+                            @if($post->status === 'P' || $post->status === 'I')
+                            <option value="P" @selected($post->status === 'P')>Published</option>
+                            <option value="I" @selected($post->status === 'I')>Inactive</option>
+                            @else
+                            <option value="P" @selected($post->status === 'P')>Published</option>
+                            <option value="D" @selected($post->status === 'D')>Draft</option>
+                            @endif
+                        </select>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {{ $post->created_at ? $post->created_at->format('M j, Y') : 'No date' }}
+                        {{ $post->publication_date ? $post->publication_date : 'No date' }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div class="flex items-center justify-end space-x-3">
-                            <a href="#" class="text-indigo-600 hover:text-indigo-900">Edit</a>
-                            <a href="#" class="text-gray-600 hover:text-gray-900">View</a>
-                            <button type="button" class="text-red-600 hover:text-red-900">Delete</button>
+                            <a href="{{route('dashboard.posts.show', $post->id)}}" class="bg-indigo-600 text-white px-3 py-2 rounded-2xl cursor-pointer">
+                                    <x-tabler-eye class="h-5"/>
+                            </a>
+                           
                         </div>
                     </td>
                 </tr>
@@ -126,3 +152,9 @@
         @endif
     </tbody>
 </table>
+<div class="px-10 pb-5 mt-3">
+    {{ $posts->links() }}
+</div>
+
+
+

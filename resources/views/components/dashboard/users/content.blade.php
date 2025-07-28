@@ -30,3 +30,4 @@
         <x-dashboard.users.table :users="$users" />
     </div>
 </div>
+

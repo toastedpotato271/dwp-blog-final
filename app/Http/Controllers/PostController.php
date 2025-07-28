@@ -211,8 +211,6 @@ class PostController extends Controller
         }
 
         // From here onward, user can now edit whatever in post.
-
-
         Log::info("Post.show - Edit function END");
     }
 

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -27,10 +28,10 @@ class DashboardController extends Controller
                 'published_posts' => Post::where('status', 'P')->count(),
                 'draft_posts' => Post::where('status', 'D')->count(),
                 'total_users' => User::count(),
-                'total_subscribers' => User::whereHas('roles', function($query) {
+                'total_subscribers' => User::whereHas('roles', function ($query) {
                     $query->where('role_name', 'subscriber');
                 })->count(),
-                'total_contributors' => User::whereHas('roles', function($query) {
+                'total_contributors' => User::whereHas('roles', function ($query) {
                     $query->whereIn('role_name', ['author', 'editor', 'admin']);
                 })->count(),
                 'total_comments' => Comment::count(),
@@ -54,7 +55,7 @@ class DashboardController extends Controller
             return view('dashboard.index', compact('stats', 'recentPosts', 'recentUsers'));
         } catch (\Exception $e) {
             Log::error('Dashboard index error: ' . $e->getMessage());
-            
+
             // Provide default stats in case of error
             $stats = [
                 'total_posts' => 0,
@@ -68,7 +69,7 @@ class DashboardController extends Controller
             ];
             $recentPosts = collect();
             $recentUsers = collect();
-            
+
             return view('dashboard.index', compact('stats', 'recentPosts', 'recentUsers'))
                 ->with('error', 'Failed to load dashboard data.');
         }
@@ -85,9 +86,9 @@ class DashboardController extends Controller
             // Apply search filter
             if ($request->filled('search')) {
                 $search = $request->get('search');
-                $query->where(function($q) use ($search) {
+                $query->where(function ($q) use ($search) {
                     $q->where('title', 'like', "%{$search}%")
-                      ->orWhere('content', 'like', "%{$search}%");
+                        ->orWhere('content', 'like', "%{$search}%");
                 });
             }
 
@@ -101,7 +102,7 @@ class DashboardController extends Controller
             $sortOrder = $request->get('order', 'desc');
             $query->orderBy($sortBy, $sortOrder);
 
-            $posts = $query->paginate(15)->withQueryString();
+            $posts = $query->paginate(10)->withQueryString();
 
             return view('dashboard.posts', compact('posts'));
         } catch (\Exception $e) {
@@ -121,15 +122,15 @@ class DashboardController extends Controller
             // Apply search filter
             if ($request->filled('search')) {
                 $search = $request->get('search');
-                $query->where(function($q) use ($search) {
+                $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%");
+                        ->orWhere('email', 'like', "%{$search}%");
                 });
             }
 
             // Apply role filter
             if ($request->filled('role')) {
-                $query->whereHas('roles', function($q) use ($request) {
+                $query->whereHas('roles', function ($q) use ($request) {
                     $q->where('name', $request->get('role'));
                 });
             }
@@ -139,7 +140,7 @@ class DashboardController extends Controller
             $sortOrder = $request->get('order', 'desc');
             $query->orderBy($sortBy, $sortOrder);
 
-            $users = $query->paginate(15)->withQueryString();
+            $users = $query->paginate(10)->withQueryString();
 
             // Get roles for filter dropdown
             $roles = Role::select('id', 'role_name')->orderBy('role_name')->get();
@@ -158,18 +159,22 @@ class DashboardController extends Controller
     {
         try {
             $request->validate([
-                'status' => 'required|in:P,D'
+                'status' => 'required|in:P,D,I',
             ]);
 
-            $post->update([
-                'status' => $request->status
-            ]);
+            $updateData = ['status' => $request->status];
+
+            if ($request->status === 'P' && !$post->publication_date) {
+                $updateData['publication_date'] = now();
+            }
+
+            $post->update($updateData);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Post status updated successfully',
                 'status' => $post->status,
-                'status_text' => $post->status === 'P' ? 'Published' : 'Draft'
+                'publication_date' => $post->publication_date,
             ]);
         } catch (\Exception $e) {
             Log::error('Toggle post status error: ' . $e->getMessage());
@@ -180,30 +185,6 @@ class DashboardController extends Controller
         }
     }
 
-    /**
-     * Delete a post
-     */
-    public function deletePost(Post $post): RedirectResponse
-    {
-        try {
-            $title = $post->title;
-            
-            // Delete associated pivot table entries
-            $post->categories()->detach();
-            $post->tags()->detach();
-            
-            // Delete comments
-            $post->comments()->delete();
-            
-            // Delete the post
-            $post->delete();
-
-            return redirect()->back()->with('success', "Post '{$title}' has been deleted successfully.");
-        } catch (\Exception $e) {
-            Log::error('Delete post error: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Failed to delete post. Please try again.');
-        }
-    }
 
     /**
      * Delete a user
@@ -217,13 +198,13 @@ class DashboardController extends Controller
             }
 
             $name = $user->name;
-            
+
             // Delete user's posts or reassign them
             $userPosts = $user->posts();
             if ($userPosts->count() > 0) {
                 // Option 1: Delete posts
                 $userPosts->delete();
-                
+
                 // Option 2: Reassign to admin (uncomment if preferred)
                 // $adminUser = User::whereHas('roles', function($q) {
                 //     $q->where('name', 'admin');
@@ -232,13 +213,13 @@ class DashboardController extends Controller
                 //     $userPosts->update(['user_id' => $adminUser->id]);
                 // }
             }
-            
+
             // Delete user's comments
             $user->comments()->delete();
-            
+
             // Detach roles
             $user->roles()->detach();
-            
+
             // Delete the user
             $user->delete();
 
@@ -265,7 +246,7 @@ class DashboardController extends Controller
             $action = $request->action;
             $count = 0;
 
-            DB::transaction(function() use ($postIds, $action, &$count) {
+            DB::transaction(function () use ($postIds, $action, &$count) {
                 switch ($action) {
                     case 'delete':
                         $posts = Post::whereIn('id', $postIds)->get();
@@ -277,18 +258,18 @@ class DashboardController extends Controller
                             $count++;
                         }
                         break;
-                        
+
                     case 'publish':
                         $count = Post::whereIn('id', $postIds)->update(['status' => 'P']);
                         break;
-                        
+
                     case 'draft':
                         $count = Post::whereIn('id', $postIds)->update(['status' => 'D']);
                         break;
                 }
             });
 
-            $actionText = match($action) {
+            $actionText = match ($action) {
                 'delete' => 'deleted',
                 'publish' => 'published',
                 'draft' => 'moved to draft'
@@ -314,12 +295,12 @@ class DashboardController extends Controller
                     ->groupBy('month')
                     ->pluck('count', 'month')
                     ->toArray(),
-                    
+
                 'posts_by_status' => Post::selectRaw('status, COUNT(*) as count')
                     ->groupBy('status')
                     ->pluck('count', 'status')
                     ->toArray(),
-                    
+
                 'top_posts' => Post::orderBy('views_count', 'desc')
                     ->limit(10)
                     ->get(['id', 'title', 'views_count']),
@@ -332,7 +313,7 @@ class DashboardController extends Controller
                     ->groupBy('month')
                     ->pluck('count', 'month')
                     ->toArray(),
-                    
+
                 'users_by_role' => DB::table('user_role')
                     ->join('roles', 'user_role.role_id', '=', 'roles.id')
                     ->selectRaw('roles.role_name, COUNT(*) as count')
@@ -346,5 +327,33 @@ class DashboardController extends Controller
             Log::error('Dashboard analytics error: ' . $e->getMessage());
             return view('dashboard.analytics')->with('error', 'Failed to load analytics data.');
         }
+    }
+
+    /**
+     * Get a post
+     */
+    public function showPost(string $id)
+    {
+        Log::info("Post.show - user is in show page - targeted post to show ---> $id");
+
+        // Step 1: Retrieve the post or fail
+        $post = Post::with('categories')->findOrFail($id);
+
+        // Step 2: Increment view count
+        $post->increment('views_count');
+
+        // Step 3: Get other data
+        $others = Post::with('categories')->inRandomOrder()->take(3)->get();
+        $comments = $post->comments()->with('users')->get();
+        $user_id = Auth::id();
+        $user_object = User::find($user_id); // returns the User model or null
+
+        // Step 4: Return view
+        return view('components.dashboard.posts.show', [
+            'post' => $post,
+            'comments' => $comments,
+            'others' => $others,
+            'user_object_of_the_one_looking_at_this_page' => $user_object,
+        ]);
     }
 }

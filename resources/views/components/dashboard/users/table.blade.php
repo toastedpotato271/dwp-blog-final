@@ -9,7 +9,7 @@
     'users'
 ])
 
-<table class="min-w-full divide-y divide-gray-200">
+<table class="min-w-full divide-y divide-gray-200 scroll-py-1">
     <thead class="bg-gray-50">
         <tr>
             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -54,7 +54,6 @@
                             </div>
                             <div>
                                 <div class="text-sm font-medium text-gray-900">{{ $user->name }}</div>
-                                <div class="text-sm text-gray-500">@{{ strtolower(str_replace(' ', '', $user->name)) }}</div>
                             </div>
                         </div>
                     </td>
@@ -94,7 +93,7 @@
                         </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {{ $user->created_at ? $user->created_at->format('M j, Y') : 'No date' }}
+                        {{$user->registration_date}}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div class="flex items-center justify-end space-x-3">
@@ -120,3 +119,7 @@
         @endif
     </tbody>
 </table>
+<div class="px-10 pb-5 mt-3">
+    {{ $users->links() }}
+</div>
+

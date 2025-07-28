@@ -14,6 +14,11 @@ class Post extends Model
 
     public $timestamps = false;
 
+    protected $fillable = [
+        'status',
+        'publication_date'
+    ];
+
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class, 'post_category');

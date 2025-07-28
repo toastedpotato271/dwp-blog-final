@@ -25,8 +25,9 @@ Route::prefix('dashboard')->name('dashboard.')->group(function () {
     Route::get('/analytics', [DashboardController::class, 'analytics'])->name('analytics');
 
     // Post management routes
-    Route::post('/posts/{post}/toggle-status', [DashboardController::class, 'togglePostStatus'])->name('posts.toggleStatus');
+    Route::patch('/posts/{post}/toggle-status', [DashboardController::class, 'togglePostStatus'])->name('posts.toggleStatus');
     Route::delete('/posts/{post}', [DashboardController::class, 'deletePost'])->name('posts.delete');
+    Route::get('/posts/{post}', [DashboardController::class, 'showPost'])->name('posts.show');
     Route::post('/posts/bulk', [DashboardController::class, 'bulkPostActions'])->name('posts.bulk');
 
     // User management routes
