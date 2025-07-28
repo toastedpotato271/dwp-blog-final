@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\RoleController;
@@ -20,6 +21,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     Route::resource('roles', RoleController::class);
+    Route::resource('categories', CategoryController::class);
+
+
     Route::resource(name: 'posts', controller: PostController::class); // this one has all our posts functions - call the functions in blade view instead
     Route::resource('comments', controller: CommentController::class); // this one has all our posts functions - call the functions in blade view instead
 });
