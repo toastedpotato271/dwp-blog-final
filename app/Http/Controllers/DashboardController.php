@@ -169,16 +169,6 @@ class DashboardController extends Controller
     }
     
     /**
-     * Show form to create a new user
-     */
-    public function createUser(): View
-    {
-        // Only get Admin (A) and Contributor (C) roles
-        $roles = Role::whereIn('role_name', ['A', 'C'])->get();
-        return view('dashboard.users.create', compact('roles'));
-    }
-    
-    /**
      * Store a new user
      */
     public function storeUser(Request $request)

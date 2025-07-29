@@ -28,7 +28,7 @@
          x-transition:leave-end="opacity-0"
          style="display: none;">
         <!-- Background overlay -->
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-50 transition-opacity" aria-hidden="true"></div>
 
         <!-- Modal panel -->
         <div class="flex min-h-screen items-center justify-center p-4 text-center sm:p-0">

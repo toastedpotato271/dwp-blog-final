@@ -32,7 +32,6 @@ Route::prefix('dashboard')->name('dashboard.')->group(function () {
     Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
 
     // User management routes
-    Route::get('/users/create', [DashboardController::class, 'createUser'])->name('users.create');
     Route::post('/users', [DashboardController::class, 'storeUser'])->name('users.store');
     Route::delete('/users/{user}', [DashboardController::class, 'deleteUser'])->name('users.delete');
     Route::put('/users/{user}/role', [DashboardController::class, 'updateUserRole'])->name('users.updateRole');
