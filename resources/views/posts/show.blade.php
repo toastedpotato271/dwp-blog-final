@@ -5,21 +5,17 @@
 <a class="flex items-center gap-2 px-15 mb-10 mt-5 text-green-800 cursor-pointer" href="{{route('landing')}}"><x-ri-arrow-left-long-line class="h-5"/>Back to home</a>
 
 <a href="{{ route('posts.edit', $post->id) }}" class="cursor-pointer bg-green-700 text-white p-3 rounded-2xl ml-15">Update</a>
+    <!-- Delete Button (using a form for POST request) -->
+    <div class="mt-5">
+    <form action="{{ route('posts.destroy', $post->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this role?');">
+        @csrf
+        @method('DELETE')
 
-
- <!-- Delete Button (using a form for POST request) -->
- <div class="mt-5">
- <form action="{{ route('posts.destroy', $post->id) }}" method="POST"
-                                onsubmit="return confirm('Are you sure you want to delete this role?');">
-                                @csrf
-                                @method('DELETE')
-
-        <button type="submit"
-            class="cursor-pointer bg-red-700 text-white p-3 rounded-2xl ml-15">
+        <button type="submit" class="cursor-pointer bg-red-700 text-white p-3 rounded-2xl ml-15">
             Delete
         </button>
     </form>
- </div>
+</div>
                            
 
 <div class="px-15 mt-5">
@@ -103,15 +99,15 @@
             @foreach ($comments as $comment)
                 @if (auth()->user()->id === $comment->user_id)
 
-                {{-- <form action="{{ route('roles.destroy', $role->id) }}" method="POST"
-                                onsubmit="return confirm('Are you sure you want to delete this role?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                    class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-lg text-xs transition duration-150 ease-in-out">
-                                    Delete
-                                </button>
-                            </form> --}}
+                    {{-- Broken Code I Think: <form action="{{ route('roles.destroy', $role->id) }}" method="POST"
+                                    onsubmit="return confirm('Are you sure you want to delete this role?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                        class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded-lg text-xs transition duration-150 ease-in-out">
+                                        Delete
+                                    </button>
+                                </form> --}}
 
                     <form class="mb-10" action="{{ route('comments.destroy', $comment->id) }}" method="POST">
                         @csrf
