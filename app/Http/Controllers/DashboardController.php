@@ -84,13 +84,12 @@ class DashboardController extends Controller
         try {
             $query = Post::with(['users:id,name', 'categories:id,category_name']);
 
-            // Apply search filter
-            if ($request->filled('search')) {
-                $search = $request->get('search');
-                $query->where(function ($q) use ($search) {
-                    $q->where('title', 'like', "%{$search}%")
-                        ->orWhere('content', 'like', "%{$search}%");
-                });
+            // Apply search filter - only search in title
+            if ($request->has('search') && !empty(trim($request->input('search')))) {
+                $search = trim($request->input('search'));
+                Log::info('Posts search query:', ['search' => $search]);
+                
+                $query->where('title', 'like', "%{$search}%");
             }
 
             // Apply status filter
