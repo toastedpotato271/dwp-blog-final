@@ -318,6 +318,7 @@ class PostController extends Controller
         $is_post_categories_changed = false;
         $is_post_tags_changed = false;
 
+
         try {
             $is_post_title_changed = $post->title !== $validated_request_items["post_title"];
             Log::info("Post.update: Is post_title changed", ['changed' => $is_post_title_changed]);
@@ -325,7 +326,11 @@ class PostController extends Controller
             Log::info("Post.update: Is post_content changed", ['changed' => $is_post_content_changed]);
             $is_new_image_url_valid_link = $this->isValidImageLink($validated_request_items["post_image"]);
             Log::info("Post.update: Is valid image url link", [$is_new_image_url_valid_link]);
-            $is_post_featured_image_url_changed = $post->featured_image_url !== $validated_request_items["post_image"];
+
+            $new_image_url_link = $validated_request_items["post_image"] ?? "";
+            Log::info("Post.update: old_image_url_link: ", [$post->featured_image_url]);
+            Log::info("Post.update: new_image_url_link: ", [$new_image_url_link]);
+            $is_post_featured_image_url_changed = ($post->featured_image_url ?? "") !== ($validated_request_items["post_image"] ?? "");
             Log::info("Post.update: Is post_image_url changed", ['changed' => $is_post_featured_image_url_changed]);
 
             $old_post_category_ids = $post->categories->pluck('id')->toArray() ?? [];
@@ -368,16 +373,17 @@ class PostController extends Controller
             $is_there_any_changes = true;
         };
         if ($is_post_featured_image_url_changed) {
-            $is_new_image_url_valid_link = $this->isValidImageLink($validated_request_items["post_image"]);
-            Log::info("Post.update: Is valid image url link", [$is_new_image_url_valid_link]);
-
-            if ($is_new_image_url_valid_link) {
-                $post->featured_image_url = $validated_request_items["post_image"];
-                Log::info("Post.update: updated post_image");
+            $new_image_url_link = $validated_request_items["post_image"] ?? "";
+            $is_new_image_url_link_valid = $this->isValidImageLink($new_image_url_link);
+            Log::info("Post.update: Url Link changed, but is image url link valid?", [$is_new_image_url_link_valid]);
+            if ($is_new_image_url_link_valid) {
+                $post->featured_image_url = $validated_request_items["post_image"] ?? "";
+                Log::info("Post.update: URL Link is Valid = updated post_image");
+                $is_there_any_changes = true;
             } else {
                 Log::error("Post.update: ERROR: Image_url is broken, please changed it or keep it blank");
+                $is_there_any_changes = false;
             }
-            $is_there_any_changes = true;
         };
         if ($is_post_categories_changed) {
             Log::info("Post.update: syncing the new post_categories");
@@ -392,10 +398,10 @@ class PostController extends Controller
             $is_there_any_changes = true;
         };
 
-        if ($is_there_any_changes) {
+        if (!$is_there_any_changes) {
             Log::info("Post.update: NOTHING was changed");
         } else {
-            Log::info("Post.update: some properties of th post was changed");
+            Log::info("Post.update: some properties of the post was CHANGED");
             Log::info("Post.update: proceeding to save changed to post");
             $post->save();
         };
