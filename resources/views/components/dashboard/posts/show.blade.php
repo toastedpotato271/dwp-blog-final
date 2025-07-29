@@ -9,12 +9,19 @@
     <div class="flex items-center justify-between">
         <div class="text-4xl font-semibold mt-4 mb-1">{{ $post->title }}</div>
         <div class="flex gap-2">
-            <a href="{{route('posts.edit', $post->id)}}" class="bg-yellow-400 text-white px-3 py-2 rounded-2xl cursor-pointer">
+
+            <a href="{{route('dashboard.posts.edit', $post->id)}}" class="bg-yellow-400 text-white px-3 py-2 rounded-2xl cursor-pointer">
                     <x-tabler-pencil class="h-5"/>
             </a>
-            <button type="submit" class="bg-red-600 text-white px-3 py-2 rounded-2xl cursor-pointer">
-                <x-tabler-trash class="h-5"/>
-            </button>        
+
+            <form action="{{route('posts.destroy', $post->id)}}" method="POST" onsubmit="return confirm('Are you sure you want to delete this post?');">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="bg-red-600 text-white px-3 py-2 rounded-2xl cursor-pointer">
+                    <x-tabler-trash class="h-5"/>
+                </button>  
+            </form>
+                  
     </div>
     </div>
     <div class="flex gap-5 text-gray-600 mb-5">

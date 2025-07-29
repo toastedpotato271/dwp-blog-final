@@ -1,10 +1,8 @@
-@extends('layouts.master')
+@extends("layouts.dashboard")
 
 @section('content')
-
-
 <div class="px-15 mb-10 mt-10 max-w-2xl mx-auto space-y-8">
-    <a class="flex items-center gap-2 mb-10 mt-5 text-green-800 cursor-pointer" href="{{route('landing')}}"><x-ri-arrow-left-long-line class="h-5" />Back to home</a>
+    <a class="flex items-center gap-2 mb-10 mt-5 text-green-800 cursor-pointer" href="{{route('dashboard.posts.show', $post->id)}}"><x-ri-arrow-left-long-line class="h-5" />Back</a>
     <!-- 💬 Comment Form -->
     <div class="space-y-3">
         <h2 class="text-xl font-semibold">Update the blog</h2>
@@ -136,5 +134,4 @@
         </form>
     </div>
 </div>
-
 @endsection

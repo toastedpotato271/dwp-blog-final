@@ -29,6 +29,7 @@ Route::prefix('dashboard')->name('dashboard.')->group(function () {
     Route::delete('/posts/{post}', [DashboardController::class, 'deletePost'])->name('posts.delete');
     Route::get('/posts/{post}', [DashboardController::class, 'showPost'])->name('posts.show');
     Route::post('/posts/bulk', [DashboardController::class, 'bulkPostActions'])->name('posts.bulk');
+    Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
 
     // User management routes
     Route::delete('/users/{user}', [DashboardController::class, 'deleteUser'])->name('users.delete');
@@ -44,7 +45,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('categories', CategoryController::class);
 
 
-    Route::resource(name: 'posts', controller: PostController::class); // this one has all our posts functions - call the functions in blade view instead
+    Route::resource('posts', controller: PostController::class); // this one has all our posts functions - call the functions in blade view instead
     Route::resource('comments', controller: CommentController::class); // this one has all our posts functions - call the functions in blade view instead
 });
 

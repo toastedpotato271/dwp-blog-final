@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Exists;
 
+use function Laravel\Prompts\alert;
+
 class PostController extends Controller
 {
 
@@ -194,34 +196,36 @@ class PostController extends Controller
 
         // Step 2: Check if post belongs to (AuthUser)
         $user_object_of_the_one_looking_at_this_page = Auth::user();
+        $admin = Auth::user()->roles->contains('id', 1);
+
         $user_id_of_the_user_object = $user_object_of_the_one_looking_at_this_page->id;
         $post_object_user_id = $post_object->user_id;
         $isOwnerOfPost = $post_object_user_id === $user_id_of_the_user_object;
 
         // Step 3: If Fail Redirect user with error. If Not Continue editing post.
-        if (!$isOwnerOfPost) {
+        if ($isOwnerOfPost || $admin) {
+            // Step 4: User considered authorized. But we need user's role. Query the user's role object.
+            $user_roles_of_user_object = $user_object_of_the_one_looking_at_this_page->roles;
+            $user_role_object = $user_roles_of_user_object->first();
+
+            // Step 5 : Send also all the available categories.
+            $all_available_categories = Category::all();
+
+            $post_tags = $post_object->tags;
+            Log::info("Post.edit: $post_tags");
+
+            // Step 6: Reflect the unchanged values to web page.
+            Log::info("Post.edit: Edit function END");
+            return view(view: "components.dashboard.posts.edit", data: [
+                "post" => $post_object,
+                "user_role" => $user_role_object,
+                "categories" => $all_available_categories,
+                "tags" => $post_object->tags,
+            ]);
+        } else {
             abort(403, 'Unauthorized action.');
             return;
         }
-
-        // Step 4: User considered authorized. But we need user's role. Query the user's role object.
-        $user_roles_of_user_object = $user_object_of_the_one_looking_at_this_page->roles;
-        $user_role_object = $user_roles_of_user_object->first();
-
-        // Step 5 : Send also all the available categories.
-        $all_available_categories = Category::all();
-
-        $post_tags = $post_object->tags;
-        Log::info("Post.edit: $post_tags");
-
-        // Step 6: Reflect the unchanged values to web page.
-        Log::info("Post.edit: Edit function END");
-        return view(view: "posts.edit", data: [
-            "post" => $post_object,
-            "user_role" => $user_role_object,
-            "categories" => $all_available_categories,
-            "tags" => $post_object->tags,
-        ]);
     }
 
     /**
@@ -302,105 +306,110 @@ class PostController extends Controller
         // Step 5: Check if (AuthUser) is owner of post.
         Log::info("Post.update: target post id $id");
         $user_id = Auth::id();
+        $admin = Auth::user()->roles->contains('id', 1);
+
         $isOwnerOfPost = $post->user_id === $user_id;
 
         Log::info("Post.update: Is it owner of post?", [$isOwnerOfPost]);
 
-        if (!$isOwnerOfPost) {
+
+
+        if ($isOwnerOfPost || $admin) {
+
+            // Step 6: Checking if the properties were changed
+            $is_post_title_changed = false;
+            $is_post_content_changed = false;
+            $is_post_featured_image_url_changed = false;
+            $is_post_categories_changed = false;
+            $is_post_tags_changed = false;
+
+            try {
+                $is_post_title_changed = $post->title !== $validated_request_items["post_title"];
+                Log::info("Post.update: Is post_title changed", ['changed' => $is_post_title_changed]);
+                $is_post_content_changed = $post->content !== $validated_request_items["post_content"];
+                Log::info("Post.update: Is post_content changed", ['changed' => $is_post_content_changed]);
+                $is_new_image_url_valid_link = $this->isValidImageLink($validated_request_items["post_image"]);
+                Log::info("Post.update: Is valid image url link", [$is_new_image_url_valid_link]);
+                $is_post_featured_image_url_changed = $post->featured_image_url !== $validated_request_items["post_image"];
+                Log::info("Post.update: Is post_image_url changed", ['changed' => $is_post_featured_image_url_changed]);
+
+                $old_post_category_ids = $post->categories->pluck('id')->toArray() ?? [];
+                $new_post_category_ids = $validated_request_items["post_categories"] ?? [];
+                $parsed_new_post_category_ids = array_map('intval', $new_post_category_ids);
+
+                $old_sorted = collect($old_post_category_ids)->sort()->values()->toArray();
+                $new_sorted = collect($parsed_new_post_category_ids)->sort()->values()->toArray();
+
+                $is_post_categories_changed = $old_sorted !== $new_sorted;
+                Log::info("Post.update: old-categories", ['category_ids' => $old_sorted]);
+                Log::info("Post.update: new-categories", ['category_ids' => $new_sorted]);
+                Log::info("Post.update: Is the post categories changed?", ['changed' => $is_post_categories_changed]);
+
+                $old_tags = $post->tags->pluck('id')->toArray();
+                $new_tags = $post_tag_id_list;
+
+                $old_tags_sorted = collect($old_tags)->sort()->values()->toArray();
+                $new_tags_sorted = collect($new_tags)->sort()->values()->toArray();
+
+                $is_post_tags_changed = $old_tags_sorted !== $new_tags_sorted;
+
+                Log::info("Post.update: old-tags", ['tag_ids' => $old_tags]);
+                Log::info("Post.update: new-tags", ['tag_ids' => $new_tags]);
+                Log::info("Post.update: were post_tags changed?", ['changed' => $is_post_tags_changed]);
+            } catch (\Exception $e) {
+                Log::error("Post.update: Error checking the data: $e");
+            }
+
+            // Step 7: No errors found while checking, now update each property one by one.
+            $is_there_any_changes = false;
+            if ($is_post_title_changed) {
+                $post->title = $validated_request_items["post_title"];
+                Log::info("Post.update: updated post_title");
+                $is_there_any_changes = true;
+            };
+            if ($is_post_content_changed) {
+                $post->content = $validated_request_items["post_content"];
+                Log::info("Post.update: updated post_content");
+                $is_there_any_changes = true;
+            };
+            if ($is_post_featured_image_url_changed) {
+                $is_new_image_url_valid_link = $this->isValidImageLink($validated_request_items["post_image"]);
+                Log::info("Post.update: Is valid image url link", [$is_new_image_url_valid_link]);
+
+                if ($is_new_image_url_valid_link) {
+                    $post->featured_image_url = $validated_request_items["post_image"];
+                    Log::info("Post.update: updated post_image");
+                } else {
+                    Log::error("Post.update: ERROR: Image_url is broken, please changed it or keep it blank");
+                }
+                $is_there_any_changes = true;
+            };
+            if ($is_post_categories_changed) {
+                Log::info("Post.update: syncing the new post_categories");
+                $post_categories_pivot_table = $post->categories();
+                $post_categories_pivot_table->sync($validated_request_items["post_categories"]);
+                $is_there_any_changes = true;
+            };
+            if ($is_post_tags_changed) {
+                Log::info("Post.update: syncing the new post_tags");
+                $post_tags_pivot_table = $post->tags();
+                $post_tags_pivot_table->sync($validated_request_items["post_tags"]);
+                $is_there_any_changes = true;
+            };
+
+            if ($is_there_any_changes) {
+                Log::info("Post.update: NOTHING was changed");
+            } else {
+                Log::info("Post.update: some properties of th post was changed");
+                Log::info("Post.update: proceeding to save changed to post");
+                $post->save();
+            };
+
+            return redirect()->route('dashboard.posts.show', $post->id)->with('success', 'successfully saved post.');
+        } else {
             abort(403, 'Unauthorized action.');
             return;
         }
-
-        // Step 6: Checking if the properties were changed
-        $is_post_title_changed = false;
-        $is_post_content_changed = false;
-        $is_post_featured_image_url_changed = false;
-        $is_post_categories_changed = false;
-        $is_post_tags_changed = false;
-
-        try {
-            $is_post_title_changed = $post->title !== $validated_request_items["post_title"];
-            Log::info("Post.update: Is post_title changed", ['changed' => $is_post_title_changed]);
-            $is_post_content_changed = $post->content !== $validated_request_items["post_content"];
-            Log::info("Post.update: Is post_content changed", ['changed' => $is_post_content_changed]);
-            $is_new_image_url_valid_link = $this->isValidImageLink($validated_request_items["post_image"]);
-            Log::info("Post.update: Is valid image url link", [$is_new_image_url_valid_link]);
-            $is_post_featured_image_url_changed = $post->featured_image_url !== $validated_request_items["post_image"];
-            Log::info("Post.update: Is post_image_url changed", ['changed' => $is_post_featured_image_url_changed]);
-
-            $old_post_category_ids = $post->categories->pluck('id')->toArray() ?? [];
-            $new_post_category_ids = $validated_request_items["post_categories"] ?? [];
-            $parsed_new_post_category_ids = array_map('intval', $new_post_category_ids);
-
-            $old_sorted = collect($old_post_category_ids)->sort()->values()->toArray();
-            $new_sorted = collect($parsed_new_post_category_ids)->sort()->values()->toArray();
-
-            $is_post_categories_changed = $old_sorted !== $new_sorted;
-            Log::info("Post.update: old-categories", ['category_ids' => $old_sorted]);
-            Log::info("Post.update: new-categories", ['category_ids' => $new_sorted]);
-            Log::info("Post.update: Is the post categories changed?", ['changed' => $is_post_categories_changed]);
-
-            $old_tags = $post->tags->pluck('id')->toArray();
-            $new_tags = $post_tag_id_list;
-
-            $old_tags_sorted = collect($old_tags)->sort()->values()->toArray();
-            $new_tags_sorted = collect($new_tags)->sort()->values()->toArray();
-
-            $is_post_tags_changed = $old_tags_sorted !== $new_tags_sorted;
-
-            Log::info("Post.update: old-tags", ['tag_ids' => $old_tags]);
-            Log::info("Post.update: new-tags", ['tag_ids' => $new_tags]);
-            Log::info("Post.update: were post_tags changed?", ['changed' => $is_post_tags_changed]);
-        } catch (\Exception $e) {
-            Log::error("Post.update: Error checking the data: $e");
-        }
-
-        // Step 7: No errors found while checking, now update each property one by one.
-        $is_there_any_changes = false;
-        if ($is_post_title_changed) {
-            $post->title = $validated_request_items["post_title"];
-            Log::info("Post.update: updated post_title");
-            $is_there_any_changes = true;
-        };
-        if ($is_post_content_changed) {
-            $post->content = $validated_request_items["post_content"];
-            Log::info("Post.update: updated post_content");
-            $is_there_any_changes = true;
-        };
-        if ($is_post_featured_image_url_changed) {
-            $is_new_image_url_valid_link = $this->isValidImageLink($validated_request_items["post_image"]);
-            Log::info("Post.update: Is valid image url link", [$is_new_image_url_valid_link]);
-
-            if ($is_new_image_url_valid_link) {
-                $post->featured_image_url = $validated_request_items["post_image"];
-                Log::info("Post.update: updated post_image");
-            } else {
-                Log::error("Post.update: ERROR: Image_url is broken, please changed it or keep it blank");
-            }
-            $is_there_any_changes = true;
-        };
-        if ($is_post_categories_changed) {
-            Log::info("Post.update: syncing the new post_categories");
-            $post_categories_pivot_table = $post->categories();
-            $post_categories_pivot_table->sync($validated_request_items["post_categories"]);
-            $is_there_any_changes = true;
-        };
-        if ($is_post_tags_changed) {
-            Log::info("Post.update: syncing the new post_tags");
-            $post_tags_pivot_table = $post->tags();
-            $post_tags_pivot_table->sync($validated_request_items["post_tags"]);
-            $is_there_any_changes = true;
-        };
-
-        if ($is_there_any_changes) {
-            Log::info("Post.update: NOTHING was changed");
-        } else {
-            Log::info("Post.update: some properties of th post was changed");
-            Log::info("Post.update: proceeding to save changed to post");
-            $post->save();
-        };
-
-        return redirect()->back()->with('success', 'successfully saved post.');
     }
 
 
@@ -421,25 +430,29 @@ class PostController extends Controller
         }
 
         // Step 2: Make sure it's user's posts it's deleting
-        $user_id = Auth::id();
+        $user = Auth::user();
+        $admin = $user->roles->contains('id', 1);
+        $user_id = $user ? $user->id : null;
 
-        if ($post->user_id !== $user_id) {
+        if ($post->user_id == $user_id || $admin) {
+            // Step 3: Detach relationships (optional, depends on your DB setup)
+            $post->comments()->delete();
+            $post->media()->delete();
+            $post->tags()->detach();
+            $post->categories()->detach();
+
+            // Step 4: Delete the post
+            $post->delete();
+
+            Log::info("Post.delete - Post with id $id deleted successfully.");
+            Log::info("Post.delete - delete function END");
+
+            // Step 4: Redirect to dashboard post list with success message
+            return redirect()->route('dashboard.posts')->with('success', 'Post deleted successfully.');
+        } else {
             abort(403, 'Unauthorized action.');
             return;
         }
-
-        // Step 3: Detach relationships (optional, depends on your DB setup)
-        $post->tags()->detach();
-        $post->categories()->detach();
-
-        // Step 4: Delete the post
-        $post->delete();
-
-        Log::info("Post.delete - Post with id $id deleted successfully.");
-        Log::info("Post.delete - delete function END");
-
-        // Step 4: Redirect to landing with success message
-        return redirect()->route('landing')->with('success', 'Post deleted successfully.');
     }
 
 

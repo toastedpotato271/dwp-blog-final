@@ -4,20 +4,6 @@
 
 <a class="flex items-center gap-2 px-15 mb-10 mt-5 text-green-800 cursor-pointer" href="{{route('landing')}}"><x-ri-arrow-left-long-line class="h-5"/>Back to home</a>
 
-<a href="{{ route('posts.edit', $post->id) }}" class="cursor-pointer bg-green-700 text-white p-3 rounded-2xl ml-15">Update</a>
-    <!-- Delete Button (using a form for POST request) -->
-    <div class="mt-5">
-    <form action="{{ route('posts.destroy', $post->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this role?');">
-        @csrf
-        @method('DELETE')
-
-        <button type="submit" class="cursor-pointer bg-red-700 text-white p-3 rounded-2xl ml-15">
-            Delete
-        </button>
-    </form>
-</div>
-                           
-
 <div class="px-15 mt-5">
     <div class="text-4xl font-semibold mt-4 mb-1">{{ $post->title }}</div>
     <div class="flex gap-5 text-gray-600 mb-5">
