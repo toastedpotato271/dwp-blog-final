@@ -13,8 +13,8 @@
     <x-dashboard.users.content 
         :users="$users ?? collect()"
         :roles="$roles ?? collect()"
-        :currentRole="request('role')"
-        :currentStatus="request('status')"
+        :currentRole="request()->query('role')"
+        :searchQuery="request()->query('search')"
     />
 </div>
 @endsection
